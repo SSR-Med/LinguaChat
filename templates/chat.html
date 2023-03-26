@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!--Titulo-->
+    <title>LinguaChat</title>
+    <!-- add icon link -->
+    <link rel="icon" href="/static/logo.png" type="image/x-icon">
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        /* El recuadro */
+        .card {
+            position: absolute;
+            width: 98%;
+            height: 98%;
+            box-shadow: 0px 0px 5px gray;
+            top: 1%;
+            left: 1%;
+            border-radius: 10px;
+        }
+
+        /* El chat, esto es para que haga overflow desde una altura superior al input */
+        .mensaje {
+            position: inherit;
+            max-height: 85%;
+            overflow: auto;
+        }
+
+        /* Recuadro, font size, altura y margings de los bloques de texto */
+        .messages {
+            position: relative;
+            padding-bottom: 10%;
+            padding-left: 5%;
+            padding-top: 2%;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #dedede;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: larger;
+        }
+
+        /* Distancia entre cada recuadro */
+        .messages::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        /* El input, el width y su posición */
+        #chat-form input {
+            position: absolute;
+            top: 95%;
+            left: 50%;
+            width: 88%;
+            left: 2%;
+            border-radius: 20px;
+        }
+
+        /* El botón */
+        #chat-form button {
+            position: absolute;
+            top: 95%;
+            width: 6%;
+            left: 93%;
+            border-radius: 20px;
+        }
+
+        /* El microfono */
+        #chat-form img {
+            position: absolute;
+            top: 92%;
+            left: 89.5%;
+        }
+
+        #profile {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        /* El logo que aparece en la pestaña */
+        #logo {
+            position: absolute;
+            top: -0.3%;
+            left: 43%;
+        }
+
+        /* Para que pueda el usuario ver que el micro es clickeable */
+        #audioMicrofono {
+            cursor: pointer;
+        }
+
+        /* El dropdown de los idiomas */
+        .dropdown {
+            position: absolute;
+            top: 0;
+            left: 93%;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        /* Dropdown Content (Hidden by Default) */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        /* Links inside the dropdown */
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        /* Show the dropdown menu on hover */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* El chat del otro usuario */
+        .darker {
+            border-color: #ccc;
+            background-color: #ddd;
+        }
+
+        /* Las imagenes de perfil */
+        .messages img {
+            float: left;
+            max-width: 60px;
+            width: 100%;
+            margin-right: 20px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-body card">
+        <div class="card-body">
+            <strong id="profile"></strong>
+            <!--Nuestra app-->
+            <h4 class="card-title text-center"> LinguaChat</h4>
+            <div class="dropdown">
+                <!--Logo-->
+                <img src="/static/educacion.png" width="60" height="60">
+                <!--Idiomas drop down-->
+                <div class="dropdown-content">
+                    <a href="#">Spanish</a>
+                    <a href="#">French</a>
+                    <a href="#">German</a>
+                    <a href="#">English</a>
+                </div>
+            </div>
+            <!--Logo cerca del header-->
+            <img id="logo" src="/static/logo.png" width="60" height="60">
+            <hr>
+            <!--Apartado de mensajes-->
+            <div class="mensaje">
+                <div class="messages">
+                    <!--Yo, robot-->
+                    <img src="/static/bot.png" width="55" height="55">
+                    <p>Hello, my name is LinguaChat. I am a bot assistant, how can I help you?</p>
+                </div>
+                <div class="messages darker">
+                    <!--Yo, humano-->
+                    <img src="/static/user.png" width="55" height="55">
+                    <p>Hello, my name is Santiago. Are u a real robot?</p>
+                </div>
+            </div>
+            <!--Input, microfono y send-->
+            <div class="form-inline" id="chat-form">
+                <input id="input" type="text" class="form-control" placeholder="Write your message">
+                <button id="send" type="submit" class="btn btn-primary" onclick="agregarMensaje()">Send</button>
+                <img id="audioMicrofono" src="/static/micro.png" width="70" height="60">
+            </div>
+        </div>
+    </div>
+    <script>
+        // Inicialización del microfono
+        var isRecording = false;
+        let recorder;
+        let chunks = [];
+        document.getElementById('audioMicrofono').addEventListener('click', function () {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+        // Función del micro
+        function startRecording() {
+            document.getElementById("audioMicrofono").src = "/static/redmicro.png";
+            isRecording = true;
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function (stream) {
+                    recorder = new MediaRecorder(stream);
+                    recorder.ondataavailable = function (e) {
+                        chunks.push(e.data);
+                    };
+                    recorder.start();
+                });
+        }
+        // Función para apagar microfono
+        function stopRecording() {
+            document.getElementById("audioMicrofono").src = "/static/micro.png";
+            isRecording = false;
+            recorder.onstop = function () {
+                const blob = new Blob(chunks, { 'type': 'audio/mp3; codecs=opus' });
+                // Send the Blob to the server using the fetch API
+                const formData = new FormData();
+                formData.append("audio", blob, "recording.mp3");
+                fetch("/save-audio", {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(response => {
+                        // Clear the chunks array for the next recording
+                        chunks = [];
+                    })
+                    .catch(error => console.error(error));
+            };
+            recorder.stop();
+
+        }
+        // Fetch al mensaje del bot (Por ahora es una constante de python)
+        async function obtenerMensajeBot() {
+            const response = await fetch('/bot');
+            const data = await response.json();
+            botMessage = data.bot;
+            return await botMessage;
+        }
+        // Función delay (Me agrada más con una funcìón directamente, esto es cosa mia )
+        function delay(time) {
+            return new Promise(resolve => setTimeout(resolve, time));
+        }
+        // Función para agregar mensajes: El mensaje del usuario y el mensaje automatizado del bot
+        async function agregarMensaje() {
+            // USUARIO
+            // La parte del USUARIO
+            // Agregar el nuevo div al div con la clase "mensaje"
+            var messagesDiv = document.querySelector(".mensaje");
+            // Obtener el valor del input
+            var mensaje = document.getElementById("input").value;
+            // Crear un nuevo elemento de párrafo y agregar el texto
+            var parrafo = document.createElement("p");
+            var texto = document.createTextNode(mensaje);
+            parrafo.appendChild(texto);
+            // Post al mensaje para obtener los datos en python
+            await fetch('/saveText', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(mensaje),
+            });
+            // Agregar una imagen
+            var img = new Image(55, 55);
+            img.src = "/static/user.png";
+            // Agregar el div
+            var newDiv = document.createElement("div");
+            newDiv.classList.add("messages");
+            newDiv.classList.add("darker");
+            // Agregar imagen y parrafo
+            newDiv.appendChild(img);
+            newDiv.appendChild(parrafo);
+            // Agregar el div al div
+            messagesDiv.appendChild(newDiv);
+            // Limpiar el valor del input
+            document.getElementById("input").value = "";
+            // BOT
+            // Ahora falta agregar el mensaje automatico
+            botMessage = await obtenerMensajeBot();
+            // Crear un nuevo elemento de párrafo y agregar el texto
+            parrafo = document.createElement("p");
+            texto = document.createTextNode(botMessage);
+            parrafo.appendChild(texto);
+            // Agregar una imagen
+            var img = document.createElement("img");
+            img.src = "/static/bot.png";
+            img.width = "55";
+            img.height = "55";
+            // Agregar el div
+            newDiv = document.createElement("div");
+            newDiv.classList.add("messages");
+            // Agregar imagen y parrafo
+            newDiv.appendChild(img);
+            newDiv.appendChild(parrafo);
+            // Agregar el div al div
+            // Espera un seg para enviar el nuevo mensaje
+            await delay(1000);
+            messagesDiv.appendChild(newDiv)
+        }
+    </script>
+</body>
+
+</html>
