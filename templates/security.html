@@ -1,0 +1,169 @@
+<html>
+<style>
+    * {
+        list-style: none;
+        text-decoration: none;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    body {
+        background: #f5f6fa;
+    }
+
+    .wrapper .sidebar {
+        background: rgb(58, 58, 58);
+        position: absolute;
+        width: 22%;
+        height: 100%;
+        padding: 20px 0;
+        transition: all 0.5s ease;
+    }
+
+    .elements {
+        position: relative;
+        top: 25%;
+        left: 10%;
+
+    }
+
+    .elements a {
+        position: relative;
+        color: white;
+        text-decoration: none;
+        font-size: xx-large;
+
+    }
+
+    .elements a:hover {
+        color: rgb(253, 219, 58);
+    }
+
+    li {
+        margin-bottom: 15%;
+    }
+
+    .profile {
+        position: absolute;
+        top: 25%;
+        left: 32%;
+    }
+
+    .profile h1 {
+        color: rgb(44, 44, 44);
+        font-size: xx-large;
+        margin-bottom: 60px;
+    }
+
+    .inputs {
+        font-size: x-large;
+    }
+
+    .inputs p {
+        margin-bottom: 30px;
+    }
+
+    .subText {
+        border: none;
+        border-bottom: 1px solid #3a3a3a;
+        margin-bottom: 30px;
+        width: 200%;
+        font-size: large;
+    }
+
+    #submitID {
+        padding: 7px;
+        color: white;
+        font-weight: bold;
+        background-color: #3a3a3a;
+        width: 70%;
+        height: 50px;
+        font-size: large;
+        cursor: pointer;
+    }
+</style>
+
+<head>
+    <title>Security</title>
+    <link rel="icon" href="/static/logo.png" type="image/x-icon">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="profile">
+            <h1>Delete account</h1>
+            <!--User and password-->
+            <div class="inputs">
+                <p>Username</p>
+                <input type="text" class="subText" id="userNameID">
+                <p>Password</p>
+                <input type="password" class="subText" id="PassID">
+                <input type="submit" value="Delete" id="submitID" onclick="borrarCuenta()">
+            </div>
+        </div>
+        <div class="sidebar">
+            <!--menu item-->
+            <!--Elements-->
+            <div class="elements">
+                <ul>
+                    <li>
+                        <a href="perfil">Profile</a>
+                    </li>
+                    <li>
+                        <a href="#">Notifications</a>
+                    </li>
+                    <li>
+                        <a href="#">Billing info</a>
+                    </li>
+                    <li>
+                        <a href="#">General</a>
+                    </li>
+                    <li>
+                        <a href="security">Security</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    // Vamos a checkear si el usuario está logueado
+    async function obtenerUsuario() {
+        const response = await fetch('/usName');
+        const data = await response.json();
+        var user = data.name;
+        if (!user) {
+            alert('You are not logged in. Please log in to continue.');
+            window.location.href = '\\';
+        }
+    }
+    obtenerUsuario();
+    // Vamos a borrar la cuenta del usuario
+    async function borrarCuenta() {
+        if (window.confirm("Do you want to delete your account?")) {
+            // Vamos a obtener los valores de los inputs
+            var user = document.getElementById("userNameID").value;
+            var passw = document.getElementById("PassID").value;
+            // El check de que el usuario haya introducido algún valor
+            if (user != null && user != "" && passw != null && passw != "") {
+                fetch(`/deleteAccount?user=${user}&passw=${passw}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status == 200) {
+                            window.alert("Account has been deleted")
+                            window.location.href = '\\';
+                        } else {
+                            window.alert("User/password incorrect, try again")
+                        }
+                    });
+            }
+        }
+        // A la final se reinician los valores de los inputs
+        document.getElementById("userNameID").value = '';
+        document.getElementById("PassID").value = '';
+    }
+</script>
+
+</html>

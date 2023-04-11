@@ -1,0 +1,218 @@
+<html>
+<style>
+    * {
+        list-style: none;
+        text-decoration: none;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    body {
+        background: #f5f6fa;
+    }
+
+    .wrapper .sidebar {
+        background: rgb(58, 58, 58);
+        position: absolute;
+        width: 22%;
+        height: 100%;
+        padding: 20px 0;
+        transition: all 0.5s ease;
+    }
+
+    .elements {
+        position: relative;
+        top: 25%;
+        left: 10%;
+
+    }
+
+    .elements a {
+        position: relative;
+        color: white;
+        text-decoration: none;
+        font-size: xx-large;
+
+    }
+
+    .elements a:hover {
+        color: rgb(253, 219, 58);
+    }
+
+    li {
+        margin-bottom: 15%;
+    }
+
+    .profile {
+        position: absolute;
+        top: 15%;
+        left: 32%;
+    }
+
+    .profile h1 {
+        color: rgb(44, 44, 44);
+        font-size: xx-large;
+    }
+
+    .pp {
+        position: fixed;
+        top: 30%;
+    }
+
+    .inputs {
+        position: fixed;
+        top: 30%;
+        left: 50%;
+        font-size: x-large;
+    }
+
+    .inputs p {
+        margin-bottom: 30px;
+    }
+
+    .subText {
+        border: none;
+        border-bottom: 1px solid #3a3a3a;
+        margin-bottom: 30px;
+        width: 200%;
+        font-size: large;
+    }
+
+    #submitID {
+        padding: 7px;
+        color: white;
+        font-weight: bold;
+        background-color: #3a3a3a;
+        width: 70%;
+        height: 50px;
+        font-size: large;
+        cursor: pointer;
+    }
+</style>
+
+<head>
+    <title>Profile</title>
+    <link rel="icon" href="/static/logo.png" type="image/x-icon">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="profile">
+            <h1>Profile Settings</h1>
+            <div class="pp">
+                <img src="/static/user.png" width="150" height="150">
+                <p></p>
+                <input type="file" name="image" id="imageInput">
+            </div>
+            <!--User and pass-->
+            <div class="inputs">
+                <p>Username</p>
+                <input type="text" class="subText" id="userNameID">
+                <p>Old Password</p>
+                <input type="password" class="subText" id="oldPassID">
+                <p>New Password</p>
+                <input type="password" class="subText" id="newPassID">
+                <input type="submit" value="Save Changes" id="submitID" onclick="changeUser()">
+            </div>
+
+        </div>
+        <div class="sidebar">
+            <!--menu item-->
+            <!--Elements-->
+            <div class="elements">
+                <ul>
+                    <li>
+                        <a href="perfil">Profile</a>
+                    </li>
+                    <li>
+                        <a href="#">Notifications</a>
+                    </li>
+                    <li>
+                        <a href="#">Billing info</a>
+                    </li>
+                    <li>
+                        <a href="#">General</a>
+                    </li>
+                    <li>
+                        <a href="security">Security</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    </div>
+</body>
+<script>
+    // Vamos a checkear si el usuario está logueado
+    async function obtenerUsuario() {
+        const response = await fetch('/usName');
+        const data = await response.json();
+        var user = data.name;
+        if (!user) {
+            alert('You are not logged in. Please log in to continue.');
+            window.location.href = '\\';
+        }
+    }
+    obtenerUsuario();
+    // Para mandar la imagen
+    document.getElementById('imageInput').addEventListener('change', function (event) {
+        var file = event.target.files[0];
+        var formData = new FormData();
+        formData.append('file', file);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/uploadImage', true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                location.reload(true);
+                console.log('File uploaded successfully');
+            } else {
+                console.log('File upload failed');
+            }
+        };
+        xhr.send(formData);
+    });
+    // Para cambiar el usuario y contraseña
+    async function changeUser() {
+        // Primero el check con el usuario
+        var usuario = document.getElementById("userNameID").value;
+        // Si llega a existir usuario
+        if (usuario != null && usuario != "") {
+            fetch(`/changeUser?username=${usuario}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status == 200) {
+                        window.alert("Username is being used by another client, select another")
+                    } else {
+                        window.alert("Username changed correctly")
+                    }
+                });
+        }
+        // Para cambiar la contraseña
+        // Primero se hace el check de que existan valores en oldPassID y newPassID
+        var oldPass = document.getElementById("oldPassID").value;
+        var newPass = document.getElementById("newPassID").value;
+        // El check con el if
+        if (oldPass != null && oldPass != "" & newPass != null && newPass != "") {
+            // Hora del posting
+            fetch(`/changePass?oldPass=${oldPass}&newPass=${newPass}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status == 200) {
+                        window.alert("Password changed correctly")
+                    } else {
+                        window.alert("Old password is incorrect, try again")
+                    }
+                });
+        }
+        // A la final se reinician los valores de los inputs
+        document.getElementById("userNameID").value = '';
+        document.getElementById("oldPassID").value = '';
+        document.getElementById("newPassID").value = '';
+    }
+</script>
+
+</html>

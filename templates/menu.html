@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <title>Menu</title>
+</head>
+<style>
+    body {
+        background: rgb(58, 58, 58);
+        font-family: "Montserrat", sans-serif;
+    }
+
+    .navMenu {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .navMenu a {
+        color: #f6f4e6;
+        text-decoration: none;
+        font-size: 1.2em;
+        text-transform: uppercase;
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .navMenu a:hover {
+        color: rgb(253, 219, 58);
+    }
+</style>
+
+<body>
+    <link rel="icon" href="/static/logo.png" type="image/x-icon">
+    <nav class="navMenu">
+        <a href="chat">Chat</a>
+        <a href="perfil">Profile</a>
+        <a href="about">About</a>
+        <a href="help">Help</a>
+        <a href="\">Log out</a>
+    </nav>
+</body>
+<script>
+    // Vamos a checkear si el usuario está logueado
+    async function obtenerUsuario() {
+        const response = await fetch('/usName');
+        const data = await response.json();
+        var user = data.name;
+        if (!user) {
+            alert('You are not logged in. Please log in to continue.');
+            window.location.href = '\\';
+        }
+    }
+    obtenerUsuario();
+</script>
+
+</html>

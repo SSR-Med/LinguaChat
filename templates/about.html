@@ -1,0 +1,136 @@
+<html>
+<style>
+    #margen {
+        position: absolute;
+        top: 15%;
+        left: 20%;
+        width: 50%;
+        height: 60%;
+        font-family: 'Times New Roman', Times, serif;
+    }
+
+    #pp {
+        position: relative;
+        width: 70ch;
+        font-size: x-large;
+        margin-bottom: 20px;
+    }
+
+    #title {
+        position: relative;
+        font-size: 50;
+        margin-bottom: 20px;
+    }
+
+    #cuadrante {
+        position: relative;
+        display: flex;
+        background-color: rgba(229, 229, 229);
+        height: 85%;
+        width: 120%;
+        font-size: large;
+    }
+
+    .left {
+        position: relative;
+        width: 50%;
+    }
+
+    .right {
+        position: relative;
+        width: 50%;
+    }
+
+    .up {
+        width: 55ch;
+        position: relative;
+        height: 50%;
+        left: 5%;
+        top: 5%;
+    }
+
+    .down {
+        width: 55ch;
+        position: relative;
+        height: 50%;
+        left: 5%;
+        top: 5%;
+    }
+
+    #subtitle {
+        position: relative;
+        margin-bottom: 15px;
+    }
+</style>
+
+<head>
+    <title>About Us</title>
+    <!-- add icon link -->
+    <link rel="icon" href="/static/logo.png" type="image/x-icon">
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="margen">
+        <h1 id="title">About</h1>
+        <div id="pp">
+            <p>By understanding, imagining and expressing change, we create simpler, lighter, more desirable
+                ideas
+                for the
+                future. We design for life. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+                deserunt mollit anim id est laborum. </p>
+            <p>At Design Studio you will meet</p>
+        </div>
+        <div id="cuadrante">
+            <div class="left">
+                <div class="up">
+                    <h2 id="subtitle">Futurists</h2>
+                    <p>Morbi tincidunt augue interdum velit euismod in pellentesque. Pellentesque diam volutpat commodo
+                        sed egestas egestas fringilla. Sed euismod nisi porta lorem. Volutpat odio facilisis mauris sit
+                        amet. Curabitur gravida arcu ac tortor dignissim convallis aenean. </p>
+                </div>
+                <div class="down">
+                    <h2 id="subtitle">Designers</h2>
+                    <p>Morbi tincidunt augue interdum velit euismod in pellentesque. Pellentesque diam volutpat commodo
+                        sed egestas egestas fringilla. Sed euismod nisi porta lorem. Volutpat odio facilisis mauris sit
+                        amet. Curabitur gravida arcu ac tortor dignissim convallis aenean. </p>
+                </div>
+            </div>
+            <div class="right">
+                <div class="up">
+                    <h2 id="subtitle">Strategists</h2>
+                    <p>Morbi tincidunt augue interdum velit euismod in pellentesque. Pellentesque diam volutpat commodo
+                        sed egestas egestas fringilla. Sed euismod nisi porta lorem. Volutpat odio facilisis mauris sit
+                        amet. Curabitur gravida arcu ac tortor dignissim convallis aenean. </p>
+                </div>
+                <div class="down">
+                    <h2 id="subtitle">Realisers</h2>
+                    <p>Morbi tincidunt augue interdum velit euismod in pellentesque. Pellentesque diam volutpat commodo
+                        sed egestas egestas fringilla. Sed euismod nisi porta lorem. Volutpat odio facilisis mauris sit
+                        amet. Curabitur gravida arcu ac tortor dignissim convallis aenean. </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+<script>
+    // Vamos a checkear si el usuario está logueado
+    async function obtenerUsuario() {
+        const response = await fetch('/usName');
+        const data = await response.json();
+        var user = data.name;
+        if (!user) {
+            alert('You are not logged in. Please log in to continue.');
+            window.location.href = '\\';
+        }
+    }
+    obtenerUsuario();
+</script>
+
+</html>
